@@ -1,0 +1,28 @@
+name: GH environment wait-timer binding
+run-name: wait-${{ inputs.cell || github.event_name }}
+on:
+  workflow_dispatch:
+    inputs:
+      cell:
+        required: true
+        type: string
+      should_fail:
+        required: true
+        type: boolean
+  pull_request:
+    types: [opened, synchronize, reopened]
+  merge_group:
+    types: [checks_requested]
+permissions:
+  contents: read
+jobs:
+  protected:
+    name: GH wait-timer protected
+    environment: wait-gate
+    runs-on: ubuntu-latest
+    steps:
+      - name: GH wait-timer inert marker
+        run: echo 'WAIT-TIMER-0b3f92dfbc1e7ea50b1c43f5'
+      - name: GH requested inert failure
+        if: ${{ inputs.should_fail == true }}
+        run: exit 1
